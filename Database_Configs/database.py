@@ -19,17 +19,18 @@ class Database:
             sql = f.read()
 
         # Strip single-line comments before splitting on ";"
-        # to avoid false splits on semicolons inside comment text
         lines = [
             line for line in sql.splitlines()
             if not line.strip().startswith("--")
         ]
         cleaned = "\n".join(lines)
 
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 0")
         for statement in cleaned.split(";"):
             stmt = statement.strip()
             if stmt:
                 cursor.execute(stmt)
+        cursor.execute("SET FOREIGN_KEY_CHECKS = 1")
 
     def createConnection(self):
         """Create and return a database connection."""

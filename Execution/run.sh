@@ -29,7 +29,7 @@ done
 echo "MySQL is ready."
 
 # 3. Set up venv if not already in one
-[[ "$VIRTUAL_ENV" == "" ]]; INVENV=$?
+[[ "$VIRTUAL_ENV" == "" ]] && INVENV=0 || INVENV=1
 
 if [ $INVENV -eq 1 ]; then
     echo "Already in a venv. Installing requirements..."
