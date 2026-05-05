@@ -1,4 +1,6 @@
 import sys
+import json
+
 
 sys.path.append("./")
 
@@ -7,6 +9,30 @@ from Database_Configs.database import Database
 db = Database()
 
 print("Connected to database.")
+
+PARAMETERS = [
+    "O2 partial pressure",
+    "CO2 partial pressure",
+    "Humidity",
+    "Temperature",
+    "Cabin pressure",
+    "Airflow rate",
+    "CO",
+    "NH3",
+    "N2",
+    "O2",
+    "CO2",
+    "CH4",
+    "H2 (ppm)",
+    "H2O",
+    "H2 (%)",
+    "Bacterial/fungal count",
+    "O2 output rate (generator)",
+    "O2 purity (generator)",
+    "Water purity",
+    "Production rate (water recovery system)",
+]
+
 
 while True:
     print("\n --- ISS ECLSS Fault Detection System ---")
@@ -67,18 +93,43 @@ while True:
 
     # ------------------------------------------------------------------
     elif choice == "5":
-        loc_id  = input("Location ID: ").strip()
-        voltage = input("Voltage: ").strip()
-        current = input("Current: ").strip()
-        temp    = input("Temp: ").strip()
-        label   = input("Label (normal/anomaly): ").strip()
+        loc_id = input("Location ID: ").strip()
 
-        if label not in ("normal", "anomaly"):
-            print("Invalid label — must be 'normal' or 'anomaly'.")
+
+        print("\nAvailable parameters:")
+        for i, p in enumerate(PARAMETERS, 1):
+            print(f"  {i:>2}. {p}")
+
+        readings = {}
+        for slot in range(1, 3):
+            raw = input(f"\nParameter {slot} number (or press Enter to skip): ").strip()
+            if not raw:
+                break
+            if not raw.isdigit() or not (1 <= int(raw) <= len(PARAMETERS)):
+                print(f"Invalid selection — must be a number between 1 and {len(PARAMETERS)}.")
+                break
+            param = PARAMETERS[int(raw) - 1]
+            if param in readings:
+                print("That parameter is already added.")
+                break
+            value = input(f"  Value for '{param}': ").strip()
+            try:
+                readings[param] = float(value)
+            except ValueError:
+                print("Invalid value — must be a number.")
+                break
+
+        if not readings:
+            print("No parameters entered. Sensor reading not saved.")
         else:
-            data_json = f'{{"voltage": {voltage}, "current": {current}, "temp": {temp}}}'
-            new_id = db.ingest_sensor_reading(int(loc_id), data_json, label)
-            print(f"Sensor reading inserted with ID {new_id}.")
+            label = input("\nLabel (normal/anomaly): ").strip()
+            if label not in ("normal", "anomaly"):
+                print("Invalid label — must be 'normal' or 'anomaly'.")
+            else:
+                data_json = json.dumps(readings)
+                new_id = db.ingest_sensor_reading(int(loc_id), data_json, label)
+                print(f"Sensor reading inserted with ID {new_id}.")
+
 
     # ------------------------------------------------------------------
     elif choice == "6":

@@ -8,10 +8,18 @@ class Database:
         cursor = self.conn.cursor()
 
         self.sqlFromFile("Database_Configs/schema.sql", cursor)
-        self.sqlFromFile("Database_Configs/data.sql", cursor)
+
+        if not self._is_seeded(cursor):
+            self.sqlFromFile("Database_Configs/data.sql", cursor)
 
         self.conn.commit()
         cursor.close()
+
+    def _is_seeded(self, cursor):
+        """Check if the database has already been seeded."""
+        cursor.execute("SELECT COUNT(*) FROM fault_types")
+        count = cursor.fetchone()[0]
+        return count > 0
 
     def sqlFromFile(self, filename, cursor):
         """Executes MySQL commands derived from a file."""
@@ -139,8 +147,6 @@ class Database:
         Insert a sensor reading and its isolation-forest label in one call.
         Returns the new generated_data row id.
 
-        data_json : JSON string, e.g. '{"voltage": 3.3, "current": 0.5, "temp": 24.1}'
-        label     : 'normal' or 'anomaly'
         """
         cur = self._cursor()
 

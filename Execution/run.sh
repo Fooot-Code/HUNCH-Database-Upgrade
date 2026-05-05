@@ -16,7 +16,6 @@ else
         -e MYSQL_ROOT_PASSWORD=password \
         -e MYSQL_DATABASE=hunch_data \
         -p 3306:3306 \
-        -v "$PWD/mysql_data:/var/lib/mysql" \
         -d $IMAGE
 fi
 
