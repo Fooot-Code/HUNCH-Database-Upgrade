@@ -16,8 +16,8 @@ This is an experimental change to our HUNCH project that alters the database to 
   git clone https://github.com/Fooot-Code/HUNCH-Database-Upgrade.git
   ```
 3. Navigate to the same directory that this README is in.
-  - This is important because the script and Python files assume you are in this directory. Run `pwd` and it should end with `.../HUNCH-Database-Upgrade`
-4. Run the `run.sh` script
+   * This is important because the script and Python files assume you are in this directory. Run `pwd` and it should end with `.../HUNCH-Database-Upgrade`
+5. Run the `run.sh` script
  ```bash
  bash ./Execution/run.sh
  ```
